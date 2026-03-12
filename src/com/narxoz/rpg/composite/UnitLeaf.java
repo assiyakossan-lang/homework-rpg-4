@@ -5,13 +5,13 @@ import java.util.List;
 
 public abstract class UnitLeaf implements CombatNode {
     private final String name;
-    private int health;
     private final int attackPower;
+    private int health;
 
-    protected UnitLeaf(String name, int health, int attackPower) {
+    public UnitLeaf(String name, int attackPower, int health) {
         this.name = name;
-        this.health = health;
         this.attackPower = attackPower;
+        this.health = health;
     }
 
     @Override
@@ -19,7 +19,6 @@ public abstract class UnitLeaf implements CombatNode {
         return name;
     }
 
-    @Override
     public int getHealth() {
         return health;
     }
@@ -31,10 +30,9 @@ public abstract class UnitLeaf implements CombatNode {
 
     @Override
     public void takeDamage(int amount) {
-        if (!isAlive()) {
-            return;
-        }
-        health = Math.max(0, health - Math.max(0, amount));
+        if (!isAlive()) return;
+        if (amount < 0) amount = 0;
+        health = Math.max(0, health - amount);
     }
 
     @Override
@@ -43,12 +41,13 @@ public abstract class UnitLeaf implements CombatNode {
     }
 
     @Override
-    public List<CombatNode> getChildren() {
-        return Collections.emptyList();
+    public void printTree(String indent) {
+        System.out.println(indent + "- " + name +
+                " [HP=" + health + ", ATK=" + attackPower + ", alive=" + isAlive() + "]");
     }
 
     @Override
-    public void printTree(String indent) {
-        System.out.println(indent + "- " + name + " [HP=" + health + ", ATK=" + attackPower + "]");
+    public List<CombatNode> getChildren() {
+        return Collections.emptyList();
     }
 }
