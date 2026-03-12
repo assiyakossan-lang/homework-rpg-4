@@ -30,8 +30,14 @@ public abstract class UnitLeaf implements CombatNode {
 
     @Override
     public void takeDamage(int amount) {
-        if (!isAlive()) return;
-        if (amount < 0) amount = 0;
+        if (!isAlive()) {
+            return;
+        }
+
+        if (amount < 0) {
+            amount = 0;
+        }
+
         health = Math.max(0, health - amount);
     }
 
@@ -42,8 +48,10 @@ public abstract class UnitLeaf implements CombatNode {
 
     @Override
     public void printTree(String indent) {
-        System.out.println(indent + "- " + name +
-                " [HP=" + health + ", ATK=" + attackPower + ", alive=" + isAlive() + "]");
+        System.out.println(indent + "- " + name
+                + " [HP=" + health
+                + ", ATK=" + attackPower
+                + ", alive=" + isAlive() + "]");
     }
 
     @Override

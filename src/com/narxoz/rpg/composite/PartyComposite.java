@@ -13,7 +13,9 @@ public class PartyComposite implements CombatNode {
     }
 
     public void add(CombatNode node) {
-        children.add(node);
+        if (node != null) {
+            children.add(node);
+        }
     }
 
     public void remove(CombatNode node) {
@@ -26,50 +28,70 @@ public class PartyComposite implements CombatNode {
     }
 
     @Override
-    public int getHealth() {
-        // TODO: Composite aggregation
-        // Return total health of all children (and nested children).
-        return 0;
-    }
-
-    @Override
     public int getAttackPower() {
-        // TODO: Composite aggregation
-        // Return total attack of alive children only.
-        return 0;
+        int total = 0;
+        for (CombatNode child : children) {
+            if (child.isAlive()) {
+                total += child.getAttackPower();
+            }
+        }
+        return total;
     }
 
     @Override
     public void takeDamage(int amount) {
-        // TODO: Composite distribution
-        // Distribute incoming damage across alive children.
-        // Suggested baseline:
-        // 1) Collect alive children
-        // 2) Split amount evenly (or using your own documented rule)
-        // 3) Apply damage to each child
+        if (amount <= 0) {
+            return;
+        }
+
+        List<CombatNode> aliveChildren = new ArrayList<>();
+        for (CombatNode child : children) {
+            if (child.isAlive()) {
+                aliveChildren.add(child);
+            }
+        }
+
+        if (aliveChildren.isEmpty()) {
+            return;
+        }
+
+        int perChildDamage = amount / aliveChildren.size();
+        int remainder = amount % aliveChildren.size();
+
+        for (int i = 0; i < aliveChildren.size(); i++) {
+            int currentDamage = perChildDamage;
+
+            if (i < remainder) {
+                currentDamage++;
+            }
+
+            aliveChildren.get(i).takeDamage(currentDamage);
+        }
     }
 
     @Override
     public boolean isAlive() {
-        // TODO: Composite liveness
-        // Return true when at least one child is alive.
+        for (CombatNode child : children) {
+            if (child.isAlive()) {
+                return true;
+            }
+        }
         return false;
+    }
+
+    @Override
+    public void printTree(String indent) {
+        System.out.println(indent + "+ " + name
+                + " [Party, totalATK=" + getAttackPower()
+                + ", alive=" + isAlive() + "]");
+
+        for (CombatNode child : children) {
+            child.printTree(indent + "   ");
+        }
     }
 
     @Override
     public List<CombatNode> getChildren() {
         return Collections.unmodifiableList(children);
-    }
-
-    @Override
-    public void printTree(String indent) {
-        // TODO: Tree visualization
-        // Print this node and recurse into children with increased indent.
-        System.out.println(indent + "+ " + name + " [TODO: compute HP/ATK]");
-    }
-
-    private List<CombatNode> getAliveChildren() {
-        // TODO: helper for takeDamage()
-        return new ArrayList<>();
     }
 }
